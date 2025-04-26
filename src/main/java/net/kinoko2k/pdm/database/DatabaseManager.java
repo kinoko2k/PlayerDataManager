@@ -47,7 +47,8 @@ public class DatabaseManager {
                 + "mcid VARCHAR(16) NOT NULL,"
                 + "uuid VARCHAR(36) NOT NULL UNIQUE,"
                 + "first_login_date DATETIME NOT NULL,"
-                + "playtime BIGINT NOT NULL"
+                + "playtime BIGINT NOT NULL,"
+                + "last_ip_address VARCHAR(45) NOT NULL"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
         
         try (Statement stmt = connection.createStatement()) {
@@ -56,6 +57,31 @@ public class DatabaseManager {
         } catch (SQLException e) {
             logger.severe("テーブル作成エラー: " + e.getMessage());
             throw e;
+        }
+    }
+
+    public void savePlayerData(PlayerData data) throws SQLException {
+        PlayerData existingData = getPlayerData(data.getUuid());
+        
+        if (existingData == null) {
+            String sql = "INSERT INTO player_data (mcid, uuid, first_login_date, playtime, last_ip_address) VALUES (?, ?, ?, ?, ?)";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                pstmt.setString(1, data.getMcid());
+                pstmt.setString(2, data.getUuid().toString());
+                pstmt.setTimestamp(3, Timestamp.valueOf(data.getFirstLoginDate()));
+                pstmt.setLong(4, data.getPlaytime());
+                pstmt.setString(5, data.getLastIpAddress());
+                pstmt.executeUpdate();
+            }
+        } else {
+            String sql = "UPDATE player_data SET mcid = ?, playtime = ?, last_ip_address = ? WHERE uuid = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                pstmt.setString(1, data.getMcid());
+                pstmt.setLong(2, existingData.getPlaytime() + data.getPlaytime());
+                pstmt.setString(3, data.getLastIpAddress());
+                pstmt.setString(4, data.getUuid().toString());
+                pstmt.executeUpdate();
+            }
         }
     }
 
@@ -73,32 +99,30 @@ public class DatabaseManager {
                 data.setId(rs.getInt("id"));
                 data.setFirstLoginDate(rs.getTimestamp("first_login_date").toLocalDateTime());
                 data.setPlaytime(rs.getLong("playtime"));
+                data.setLastIpAddress(rs.getString("last_ip_address"));
                 return data;
             }
             return null;
         }
     }
-
-    public void savePlayerData(PlayerData data) throws SQLException {
-        PlayerData existingData = getPlayerData(data.getUuid());
-        
-        if (existingData == null) {
-            String sql = "INSERT INTO player_data (mcid, uuid, first_login_date, playtime) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setString(1, data.getMcid());
-                pstmt.setString(2, data.getUuid().toString());
-                pstmt.setTimestamp(3, Timestamp.valueOf(data.getFirstLoginDate()));
-                pstmt.setLong(4, data.getPlaytime());
-                pstmt.executeUpdate();
+    public PlayerData getPlayerDataByMCID(String mcid) throws SQLException {
+        String sql = "SELECT * FROM player_data WHERE mcid = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, mcid);
+            ResultSet rs = pstmt.executeQuery();
+            
+            if (rs.next()) {
+                PlayerData data = new PlayerData(
+                    rs.getString("mcid"),
+                    UUID.fromString(rs.getString("uuid"))
+                );
+                data.setId(rs.getInt("id"));
+                data.setFirstLoginDate(rs.getTimestamp("first_login_date").toLocalDateTime());
+                data.setPlaytime(rs.getLong("playtime"));
+                data.setLastIpAddress(rs.getString("last_ip_address"));
+                return data;
             }
-        } else {
-            String sql = "UPDATE player_data SET mcid = ?, playtime = ? WHERE uuid = ?";
-            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setString(1, data.getMcid());
-                pstmt.setLong(2, existingData.getPlaytime() + data.getPlaytime()); // 累計プレイ時間を更新
-                pstmt.setString(3, data.getUuid().toString());
-                pstmt.executeUpdate();
-            }
+            return null;
         }
     }
 }

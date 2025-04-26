@@ -1,5 +1,6 @@
 package net.kinoko2k.pdm;
 
+import net.kinoko2k.pdm.commands.LookupCommand;
 import net.kinoko2k.pdm.database.DatabaseManager;
 import net.kinoko2k.pdm.listeners.PlayerListener;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -40,6 +41,10 @@ public final class PlayerDataManager extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+
+        LookupCommand lookupCommand = new LookupCommand(this, databaseManager);
+        getCommand("pdm").setExecutor(lookupCommand);
+        getCommand("pdm").setTabCompleter(lookupCommand);
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this, databaseManager), this);
         getLogger().info("PlayerDataManager が有効になりました！");

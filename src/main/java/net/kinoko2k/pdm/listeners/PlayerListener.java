@@ -28,6 +28,7 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         UUID playerUUID = event.getPlayer().getUniqueId();
         String playerName = event.getPlayer().getName();
+        String ipAddress = event.getPlayer().getAddress().getAddress().getHostAddress();
         loginTimes.put(playerUUID, System.currentTimeMillis() / 1000);
 
         try {
@@ -35,16 +36,19 @@ public class PlayerListener implements Listener {
             
             if (existingData == null) {
                 PlayerData newPlayerData = new PlayerData(playerName, playerUUID);
+                newPlayerData.setLastIpAddress(ipAddress);
                 database.savePlayerData(newPlayerData);
                 plugin.getLogger().info(playerName + "の新規データを作成しました。");
             } else {
+                existingData.setLastIpAddress(ipAddress);
+                database.savePlayerData(existingData);
                 plugin.getLogger().info(playerName + "の既存データを読み込みました。累計プレイ時間: " + 
                     existingData.getPlaytime() + "秒");
-            }
-        } catch (SQLException e) {
-            plugin.getLogger().severe("プレイヤーデータの処理中にエラーが発生しました: " + e.getMessage());
         }
+    } catch (SQLException e) {
+        plugin.getLogger().severe("プレイヤーデータの処理中にエラーが発生しました: " + e.getMessage());
     }
+}
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
@@ -57,6 +61,7 @@ public class PlayerListener implements Listener {
             try {
                 PlayerData playerData = new PlayerData(event.getPlayer().getName(), playerUUID);
                 playerData.setPlaytime(sessionTime);
+                playerData.setLastIpAddress(event.getPlayer().getAddress().getAddress().getHostAddress());
                 database.savePlayerData(playerData);
                 plugin.getLogger().info(event.getPlayer().getName() + "のプレイ時間を更新しました。今回のセッション: " 
                     + sessionTime + "秒");

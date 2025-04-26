@@ -6,3 +6,14 @@ load: STARTUP
 authors: [ kinoko1216 ]
 description: Utility Tool
 website: https://bento.me/kinoko1216
+commands:
+  pdm:
+    description: PlayerDataManager commands
+    usage: /pdm lookup <mcid/uuid> <value>
+    permission: pdm.lookup
+    permission-message: このコマンドを実行する権限がありません。
+
+permissions:
+  pdm.lookup:
+    description: Allows players to look up player data
+    default: op
