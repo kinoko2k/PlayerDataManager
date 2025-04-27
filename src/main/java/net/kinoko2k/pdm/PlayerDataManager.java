@@ -20,6 +20,7 @@ public final class PlayerDataManager extends JavaPlugin {
         String url = config.getString("database.url");
         String username = config.getString("database.username");
         String password = config.getString("database.password");
+        String webhookUrl = config.getString("discord.webhook-url");
 
         if (url == null || username == null || password == null) {
             getLogger().severe("データベース設定が不完全です。config.ymlを確認してください。");
