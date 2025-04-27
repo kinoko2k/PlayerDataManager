@@ -6,6 +6,7 @@ load: STARTUP
 authors: [ kinoko1216 ]
 description: Utility Tool
 website: https://bento.me/kinoko1216
+provides: [PlayerDataManagerAPI]
 commands:
   pdm:
     description: PlayerDataManager commands

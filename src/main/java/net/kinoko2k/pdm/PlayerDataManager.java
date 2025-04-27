@@ -1,5 +1,6 @@
 package net.kinoko2k.pdm;
 
+import net.kinoko2k.pdm.api.PlayerDataAPI;
 import net.kinoko2k.pdm.commands.LookupCommand;
 import net.kinoko2k.pdm.database.DatabaseManager;
 import net.kinoko2k.pdm.listeners.PlayerListener;
@@ -41,6 +42,7 @@ public final class PlayerDataManager extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        PlayerDataAPI.setPlugin(this);
 
         LookupCommand lookupCommand = new LookupCommand(this, databaseManager);
         getCommand("pdm").setExecutor(lookupCommand);
@@ -48,6 +50,14 @@ public final class PlayerDataManager extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this, databaseManager), this);
         getLogger().info("PlayerDataManager が有効になりました！");
+    }
+
+    /**
+     * DatabaseManagerのインスタンスを取得
+     * @return DatabaseManagerインスタンス
+     */
+    public DatabaseManager getDatabaseManager() {
+        return databaseManager;
     }
 
     @Override
