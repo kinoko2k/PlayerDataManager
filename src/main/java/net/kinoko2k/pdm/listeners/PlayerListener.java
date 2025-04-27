@@ -41,6 +41,7 @@ public class PlayerListener implements Listener {
             if (existingData == null) {
                 PlayerData newPlayerData = new PlayerData(playerName, playerUUID);
                 newPlayerData.setLastIpAddress(ipAddress);
+                newPlayerData.setPlaytime(0);
                 database.savePlayerData(newPlayerData);
                 plugin.getLogger().info(playerName + "の新規データを作成しました。");
 
@@ -52,6 +53,7 @@ public class PlayerListener implements Listener {
                     UUID: %s
                     初回ログイン: %s
                     IPアドレス: %s
+                    プレイ時間: 0秒
                     """,
                     playerName,
                     playerName,
@@ -75,18 +77,27 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         UUID playerUUID = event.getPlayer().getUniqueId();
+        
         if (loginTimes.containsKey(playerUUID)) {
             long loginTime = loginTimes.get(playerUUID);
             long currentTime = System.currentTimeMillis() / 1000;
             long sessionTime = currentTime - loginTime;
 
             try {
-                PlayerData playerData = new PlayerData(event.getPlayer().getName(), playerUUID);
-                playerData.setPlaytime(sessionTime);
-                playerData.setLastIpAddress(event.getPlayer().getAddress().getAddress().getHostAddress());
-                database.savePlayerData(playerData);
-                plugin.getLogger().info(event.getPlayer().getName() + "のプレイ時間を更新しました。今回のセッション: "
-                    + sessionTime + "秒");
+                PlayerData existingData = database.getPlayerData(playerUUID);
+                if (existingData != null) {
+                    long totalPlaytime = existingData.getPlaytime() + sessionTime;
+                    existingData.setPlaytime(totalPlaytime);
+                    existingData.setLastIpAddress(event.getPlayer().getAddress().getAddress().getHostAddress());
+                    database.savePlayerData(existingData);
+
+                    plugin.getLogger().info(String.format(
+                        "%sのプレイ時間を更新しました。セッション: %d秒, 累計: %d秒",
+                        event.getPlayer().getName(),
+                        sessionTime,
+                        totalPlaytime
+                    ));
+                }
             } catch (SQLException e) {
                 plugin.getLogger().severe("プレイヤーデータの保存に失敗しました: " + e.getMessage());
             }

@@ -77,7 +77,7 @@ public class DatabaseManager {
             String sql = "UPDATE player_data SET mcid = ?, playtime = ?, last_ip_address = ? WHERE uuid = ?";
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setString(1, data.getMcid());
-                pstmt.setLong(2, existingData.getPlaytime() + data.getPlaytime());
+                pstmt.setLong(2, data.getPlaytime());
                 pstmt.setString(3, data.getLastIpAddress());
                 pstmt.setString(4, data.getUuid().toString());
                 pstmt.executeUpdate();
