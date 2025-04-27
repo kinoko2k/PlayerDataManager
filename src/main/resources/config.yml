@@ -1,4 +1,4 @@
 database:
-  url: "jdbc:mysql://localhost:3306/life_pdm"
+  url: "jdbc:mysql://localhost:3306/pdm_life"
   username: "pdm_life_user"
   password: "PdM-Life_UsEr"
