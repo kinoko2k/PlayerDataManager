@@ -59,6 +59,11 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/KinokoNetWork/PlayerDataManager</url>
+        </repository>
+
     </repositories>
 
     <dependencies>
@@ -87,4 +92,12 @@
             <version>4.12.0</version>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/KinokoNetWork/PlayerDataManager</url>
+        </repository>
+    </distributionManagement>
 </project>
