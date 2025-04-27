@@ -4,7 +4,7 @@
   <groupId>net.kinoko2k</groupId>
   <artifactId>PlayerDataManager</artifactId>
   <name>PlayerDataManager</name>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <build>
     <defaultGoal>clean package</defaultGoal>
     <resources>
@@ -54,9 +54,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.33</version>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+      <version>9.2.0</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
