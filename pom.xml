@@ -74,6 +74,14 @@
         </resources>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/kinoko2k/PlayerDataManager</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>papermc-repo</id>
@@ -87,7 +95,6 @@
             <id>github</id>
             <url>https://maven.pkg.github.com/kinoko2k/PlayerDataManager</url>
         </repository>
-
     </repositories>
 
     <dependencies>
@@ -116,17 +123,4 @@
             <version>4.12.0</version>
         </dependency>
     </dependencies>
-
-    <distributionManagement>
-        <repository>
-            <id>github</id>
-            <name>GitHub kinoko2k Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/kinoko2k/PlayerDataManager</url>
-        </repository>
-        <snapshotRepository>
-            <id>github</id>
-            <name>GitHub kinoko2k Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/kinoko2k/PlayerDataManager</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
