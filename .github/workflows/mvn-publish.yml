@@ -23,17 +23,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: github
-          settings-path: ${{ github.workspace }}
+          settings-path: ${{ github.workspace }}/settings.xml
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Set SHORT_SHA
-        id: vars
-        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Publish to GitHub Packages Apache Maven
-        run: mvn -B -s $GITHUB_WORKSPACE/settings.xml clean deploy --batch-mode --no-transfer-progress -Drevision=${{ steps.vars.outputs.SHORT_SHA }}
+      - name: Publish to GitHub Packages
+        run: mvn --batch-mode -DskipTests deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_ACTOR: ${{ github.actor }}
