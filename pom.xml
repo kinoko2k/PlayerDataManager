@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>net.kinoko2k</groupId>
-    <artifactId>PlayerDataManager</artifactId>
+    <artifactId>playerdatamanager</artifactId>
     <version>1.0.3</version>
     <packaging>jar</packaging>
 
