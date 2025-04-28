@@ -1,0 +1,46 @@
+
+name: Discord Notification
+
+on:
+  workflow_run:
+    workflows: ['Build and Release', 'Maven Package']
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Notification
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        with:
+          args: |
+            {
+              "embeds": [{
+                "title": "${{ github.event.workflow_run.name }}の実行結果",
+                "description": "ワークフロー: ${{ github.event.workflow_run.display_title }}",
+                "color": "${{ github.event.workflow_run.conclusion == 'success' && '5814783' || '15158332' }}",
+                "fields": [
+                  {
+                    "name": "📊 ステータス",
+                    "value": "${{ github.event.workflow_run.conclusion == 'success' && '✅ 成功' || '❌ 失敗' }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "🔄 ブランチ",
+                    "value": "${{ github.event.workflow_run.head_branch }}",
+                    "inline": true
+                  },
+                  {
+                    "name": "🔗 ワークフロー詳細",
+                    "value": "${{ github.event.workflow_run.html_url }}"
+                  }
+                ],
+                "footer": {
+                  "text": "GitHub Actions"
+                },
+                "timestamp": "${{ github.event.workflow_run.updated_at }}"
+              }]
+            }
