@@ -30,6 +30,6 @@ jobs:
         run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Publish to GitHub Packages Apache Maven
-        run: mvn -B -s $GITHUB_WORKSPACE/deploy_settings.xml clean deploy --batch-mode --no-transfer-progress -Drevision=${{ steps.vars.outputs.SHORT_SHA }}
+        run: mvn -B -s $GITHUB_WORKSPACE/settings.xml clean deploy --batch-mode --no-transfer-progress -Drevision=${{ steps.vars.outputs.SHORT_SHA }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
