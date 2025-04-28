@@ -9,13 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       contents: read
       packages: write
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -23,12 +23,17 @@ jobs:
           distribution: 'temurin'
           cache: maven
           server-id: github
-          settings-path: ${{ github.workspace }}/settings.xml
+          settings-path: ${{ github.workspace }}
 
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Publish to GitHub Packages
-        run: mvn --batch-mode -DskipTests deploy -s ${{ github.workspace }}/settings.xml
+      - name: Set SHORT_SHA
+        id: vars
+        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Publish to GitHub Packages Apache Maven
+        run: mvn -B -s $GITHUB_WORKSPACE/settings.xml clean deploy --batch-mode --no-transfer-progress -Drevision=${{ steps.vars.outputs.SHORT_SHA }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
