@@ -9,13 +9,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
+    permissions: 
       contents: read
       packages: write
 
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
@@ -29,6 +29,6 @@ jobs:
         run: mvn -B package --file pom.xml
 
       - name: Publish to GitHub Packages
-        run: mvn --batch-mode -DskipTests deploy
+        run: mvn --batch-mode -DskipTests deploy -s ${{ github.workspace }}/settings.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
