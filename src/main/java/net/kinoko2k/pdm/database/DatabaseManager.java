@@ -37,6 +37,14 @@ public class DatabaseManager {
         }
     }
 
+    private Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed() || !connection.isValid(1)) {
+            logger.info("データベース接続が無効か、閉じられています。再接続します...");
+            connect();
+        }
+        return connection;
+    }
+
     public void createTable() throws SQLException {
         if (connection == null || connection.isClosed()) {
             throw new SQLException("データベース接続が確立されていません。");
@@ -50,8 +58,8 @@ public class DatabaseManager {
                 + "playtime BIGINT NOT NULL,"
                 + "last_ip_address VARCHAR(45) NOT NULL"
                 + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
-        
-        try (Statement stmt = connection.createStatement()) {
+
+        try (Statement stmt = getConnection().createStatement()) {
             stmt.execute(sql);
             logger.info("テーブルの作成に成功しました。");
         } catch (SQLException e) {
@@ -62,10 +70,10 @@ public class DatabaseManager {
 
     public void savePlayerData(PlayerData data) throws SQLException {
         PlayerData existingData = getPlayerData(data.getUuid());
-        
+
         if (existingData == null) {
             String sql = "INSERT INTO player_data (mcid, uuid, first_login_date, playtime, last_ip_address) VALUES (?, ?, ?, ?, ?)";
-            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            try (PreparedStatement pstmt = getConnection().prepareStatement(sql)) {
                 pstmt.setString(1, data.getMcid());
                 pstmt.setString(2, data.getUuid().toString());
                 pstmt.setTimestamp(3, Timestamp.valueOf(data.getFirstLoginDate()));
@@ -90,7 +98,7 @@ public class DatabaseManager {
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, uuid.toString());
             ResultSet rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 PlayerData data = new PlayerData(
                     rs.getString("mcid"),
@@ -110,7 +118,7 @@ public class DatabaseManager {
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, mcid);
             ResultSet rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 PlayerData data = new PlayerData(
                     rs.getString("mcid"),
